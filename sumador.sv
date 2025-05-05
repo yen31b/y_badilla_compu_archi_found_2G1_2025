@@ -1,13 +1,14 @@
 module sumador (
-    input  logic A, B, C, D,
-    output logic S1, S0
+    input  logic A, B,   // Entrada 1 (AB)
+    input  logic C, D,   // Entrada 2 (CD)
+    output logic S1, S0  // Salida suma (2 bits)
 );
-    logic [1:0] val1, val2, suma;
+    logic [1:0] in1, in2, sum;
 
-    assign val1 = {A, B};
-    assign val2 = {C, D};
-    assign suma = val1 + val2;
+    assign in1 = {A, B};
+    assign in2 = {C, D};
+    assign sum = in1 + in2;
 
-    assign S1 = suma[1];
-    assign S0 = suma[0];
+    assign S1 = sum[1];
+    assign S0 = sum[0];
 endmodule

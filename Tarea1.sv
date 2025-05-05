@@ -52,11 +52,11 @@ module Tarea1 (
 
 	 
 	     // Decodificador que activa el motor en 01 y 11
-			//	decodificador_motor motor_inst (
-			//		 .C(C_D[1]),
-			//		 .D(C_D[0]),
-			//		 .motor_on(motor_on)
-			//	);
+				decodificador_motor motor_inst (
+					 .C(sum_out[1]),
+					 .D(sum_out[0]),
+					 .motor_on(motor_on)
+				);
 			
 			
 			
@@ -76,7 +76,7 @@ module Tarea1 (
 			);
 	 assign cod_out = entrada_bin;
     assign sum_out = suma_result;
-    assign motor_on = (C_D == 2'b00 || C_D == 2'b11);
+
 
 			
 endmodule
