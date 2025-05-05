@@ -1,7 +1,7 @@
 module decodificador_motor (
-    input  logic C,
-    input  logic D,
+    input logic C,
+    input logic D,
     output logic motor_on
 );
-    assign motor_on = ~(C ^ D);  // Solo se activa cuando C == D → 00 o 11
+    assign motor_on = ~(C ^ D);  // Motor ON solo si C == D
 endmodule

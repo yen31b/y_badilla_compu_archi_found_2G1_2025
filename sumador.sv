@@ -2,19 +2,12 @@ module sumador (
     input  logic A, B, C, D,
     output logic S1, S0
 );
+    logic [1:0] val1, val2, suma;
 
-    logic temp1, temp2, and1;
+    assign val1 = {A, B};
+    assign val2 = {C, D};
+    assign suma = val1 + val2;
 
-    // S0 = B ⊕ D
-    xor XOR1 (S0, B, D);
-
-    // temp1 = A ⊕ C
-    xor XOR2 (temp1, A, C);
-
-    // and1 = B ∧ D
-    and AND1 (and1, B, D);
-
-    // S1 = temp1 ⊕ and1
-    xor XOR3 (S1, temp1, and1);
-
+    assign S1 = suma[1];
+    assign S0 = suma[0];
 endmodule
