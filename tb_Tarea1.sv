@@ -5,93 +5,63 @@ module tb_Tarea1;
     logic clk;
     logic reset;
     logic enable;
-    logic A, B;
+    logic [3:0] sensores;
     logic [1:0] cod_out;
     logic [1:0] sum_out;
+    logic [6:0] segmentos;
+    logic led0, led1, led2, led3;
+    logic motor_on;
 
-    // DUT: Design Under Test
+    // DUT (Device Under Test)
     Tarea1 dut (
         .clk(clk),
         .reset(reset),
         .enable(enable),
-        .A(A),
-        .B(B),
+        .sensores(sensores),
         .cod_out(cod_out),
-        .sum_out(sum_out)
+        .sum_out(sum_out),
+        .segmentos(segmentos),
+        .led0(led0),
+        .led1(led1),
+        .led2(led2),
+        .led3(led3),
+        .motor_on(motor_on)
     );
 
-    // Clock generation: 10ns period
+    // Clock
     initial clk = 0;
     always #5 clk = ~clk;
 
-    // Stimulus
+    // Estímulo
     initial begin
-        $display("Time | A B | C D | Sum_out | Enable");
-        $monitor("%4t | %b %b | %b %b |   %b    |   %b",
-                 $time, A, B, dut.C_D[1], dut.C_D[0], sum_out, enable);
-
+	     #5; // Delay mínimo para evitar valores x iniciales
+				$display("Time | sensores | cod_out | sum_out | C_D | motor | LEDs | 7 segmentos | enable | suma | acumulado");
+				$monitor("%4t | %b |   %b    |   %b     | %b  |   %b   | %b%b%b%b |   %b%b%b%b%b%b%b |   %b | suma=%0d | acumulado=%0d",
+							$time,
+							sensores,
+							cod_out,
+							sum_out,
+							dut.C_D,
+							motor_on,
+							dut.led3, dut.led2, dut.led1, dut.led0,
+							dut.segmentos[6], dut.segmentos[5], dut.segmentos[4],
+							dut.segmentos[3], dut.segmentos[2], dut.segmentos[1], dut.segmentos[0],
+							enable,
+							sum_out, dut.C_D);
         // Inicialización
-        reset = 1;
-        enable = 0;
-        A = 0;
-        B = 0;
+				reset = 1; enable = 0; sensores = 4'b0000;
+				#5;
+				@(posedge clk);  // aplicar reset en flanco de subida
+				reset = 0;
 
-        #10;
-        reset = 0;
+        // Probar las 16 combinaciones
+        for (int i = 0; i < 16; i++) begin
+            sensores = i[3:0];   // Conversión automática a 4 bits
+            enable = 1; #10;
+            enable = 0; #10;
+        end
 
-        // Primer valor A=0, B=1 => 01 + 00 = 01
-        A = 0; B = 1; enable = 1; #10; enable = 0; #10;
-
-        // Segundo valor A=1, B=0 => 10 + 01 = 11 (mod 4)
-        A = 1; B = 0; enable = 1; #10; enable = 0; #10;
-
-        // Tercer valor A=1, B=1 => 11 + 11 = 10 (mod 4)
-        A = 1; B = 1; enable = 1; #10; enable = 0; #10;
-
-        // Cuarto valor A=0, B=0 => 00 + 10 = 10
-        A = 0; B = 0; enable = 1; #10; enable = 0; #10;
-		  
-		  // Quinto valor A=0, B=1 => 01 + 10 = 11
-        A = 0; B = 1; enable = 1; #10; enable = 0; #10;
-
-        // Sexto valor A=1, B=0 => 10 + 11 = 01 (mod 4)
-        A = 1; B = 0; enable = 1; #10; enable = 0; #10;
-
-        // Séptimo valor A=1, B=1 => 11 + 01 = 00 (mod 4)
-        A = 1; B = 1; enable = 1; #10; enable = 0; #10;
-
-        // Octavo valor A=0, B=0 => 00 + 11 = 11
-        A = 0; B = 0; enable = 1; #10; enable = 0; #10;
-
-        // Noveno valor A=0, B=1 => 01 + 11 = 00 (mod 4)
-        A = 0; B = 1; enable = 1; #10; enable = 0; #10;
-
-        // Décimo valor A=1, B=0 => 10 + 00 = 10
-        A = 1; B = 0; enable = 1; #10; enable = 0; #10;
-
-        // Undécimo valor A=1, B=1 => 11 + 10 = 01 (mod 4)
-        A = 1; B = 1; enable = 1; #10; enable = 0; #10;
-
-        // Duodécimo valor A=0, B=0 => 00 + 01 = 01
-        A = 0; B = 0; enable = 1; #10; enable = 0; #10;
-
-        // Decimotercer valor A=0, B=1 => 01 + 01 = 10
-        A = 0; B = 1; enable = 1; #10; enable = 0; #10;
-
-        // Decimocuarto valor A=1, B=0 => 10 + 10 = 00 (mod 4)
-        A = 1; B = 0; enable = 1; #10; enable = 0; #10;
-
-        // Decimoquinto valor A=1, B=1 => 11 + 00 = 11
-        A = 1; B = 1; enable = 1; #10; enable = 0; #10;
-
-        // Decimosexto valor A=0, B=0 => 00 + 11 = 11
-        A = 0; B = 0; enable = 1; #10; enable = 0; #10;
-
-		  
-
-        // Fin
         $finish;
     end
 
 endmodule
-

@@ -1,0 +1,18 @@
+module decodificador_motor (
+    input  logic C, D,         // Estado actual (2 bits)
+    output logic motor_on      // Señal para activar motor
+);
+    logic not_C, and1, and2;
+
+    // Inversión de C
+    not (not_C, C);
+
+    // Detecta 01 → C=0, D=1
+    and (and1, not_C, D);
+
+    // Detecta 11 → C=1, D=1
+    and (and2, C, D);
+
+    // Activar motor si está en 01 o 11
+    or (motor_on, and1, and2);
+endmodule
