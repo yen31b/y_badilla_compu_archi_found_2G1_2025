@@ -2,6 +2,7 @@ module uart_rx (
     input  logic clk,       // 50 MHz
     input  logic reset,
     input  logic rx,        // desde Arduino (TX)
+    input  logic cs,        // Chip Select desde Arduino
     output logic [3:0] data, // datos recibidos
     output logic done       // 1 cuando se recibió un byte
 );
@@ -26,7 +27,8 @@ module uart_rx (
             case (state)
                 IDLE: begin
                     done <= 0;
-                    if (rx == 0) begin
+                    // Solo iniciar recepción si CS está bajo
+                    if (rx == 0 && !cs) begin
                         state <= START;
                         clk_count <= 0;
                     end
