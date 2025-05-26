@@ -1,17 +1,19 @@
-module uart_top (
+module UART_top (
     input  logic clk,
     input  logic rst,
-    input  logic tick,
     input  logic rxd,
     output logic txd,
     output logic [7:0] data_out,
     output logic data_ready
 );
+	 // feq / baudrate
+	 localparam tick = 5208; // 50_000_000 / 9600
 
     // UART RX
     logic [2:0] rx_count;       // Contador para UART_rx
     logic rx_done;              // Bandera de dato recibido (de UART_rx)
     logic [7:0] rx_byte;        // Byte recibido desde UART_rx
+	 
 
     // UART TX
     logic [2:0] tx_count;       // Contador para UART_tx
@@ -47,7 +49,7 @@ module uart_top (
 
 
     // FSM comunicacion
-    uart_fsm_comunicacion_estructural fsm_inst (
+    uart_fsm_estructural fsm_inst (
         .clk(clk),
         .rst(rst),
         .rx_done(rx_done),
@@ -59,7 +61,7 @@ module uart_top (
     );
 
     //Registro para guardar el byte recibido
-    reg_n #(.N(8)) rx_byte_reg (
+    registro_param #(.N(8)) rx_byte_reg (
         .clk(clk),
         .d(rx_byte),
         .en(reg_rx_en),
@@ -67,7 +69,7 @@ module uart_top (
     );
 
     //Registro estructural para preparar el byte a transmitir
-    reg_n #(.N(8)) tx_byte_reg (
+    registro_param #(.N(8)) tx_byte_reg (
         .clk(clk),
         .d(rx_byte), // en este caso manda lo que recibe, como un echo
         .en(reg_tx_en),
@@ -75,14 +77,14 @@ module uart_top (
     );
 	 
 	 //Contadores estructurales para RX/TX (3 bits) , va contando hasta 7
-    reg_n #(.N(3)) rx_count_reg (
+    registro_param #(.N(3)) rx_count_reg (
         .clk(clk),
         .d(rx_count + 3'd1),    // Incremento del contador
         .en(tick & ~rx_done),   // Incrementa mientras no se haya recibido el byte completo
         .q(rx_count)            // Salida del contador
     );
 
-    reg_n #(.N(3)) tx_count_reg (
+    registro_param #(.N(3)) tx_count_reg (
         .clk(clk),
         .d(tx_count + 3'd1),    // Incremento del contador
         .en(tick & ~tx_done),   // Incrementa mientras no se haya transmitido el byte completo

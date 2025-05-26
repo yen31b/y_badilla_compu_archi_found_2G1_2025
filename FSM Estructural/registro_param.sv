@@ -7,7 +7,7 @@ module registro_param #(parameter N = 8)(
     genvar i;
     generate
         for (i = 0; i < N; i = i + 1) begin : regbits
-            dff_estructural dff_inst (
+            flipflop_d dff_inst (
                 .clk(clk),
                 .rst(1'b0),
                 .en(en),
