@@ -2,6 +2,7 @@ module UART_top (
     input  logic clk,
     input  logic rst,
     input  logic rxd,
+	 input  logic signal_arduino,
     output logic txd,
     output logic [7:0] data_out,
     output logic data_ready
@@ -54,6 +55,7 @@ module UART_top (
         .rst(rst),
         .rx_done(rx_done),
         .tx_done(tx_done),
+		  .signal_arduino(signal_arduino),
         .reg_rx_en(reg_rx_en),
         .reg_tx_en(reg_tx_en),
         .tx_start(tx_start),
@@ -64,6 +66,7 @@ module UART_top (
     registro_param #(.N(8)) rx_byte_reg (
         .clk(clk),
         .d(rx_byte),
+		  .rst(rst),
         .en(reg_rx_en),
         .q(data_out)
     );
@@ -71,6 +74,7 @@ module UART_top (
     //Registro estructural para preparar el byte a transmitir
     registro_param #(.N(8)) tx_byte_reg (
         .clk(clk),
+		  .rst(rst),
         .d(rx_byte), // en este caso manda lo que recibe, como un echo
         .en(reg_tx_en),
         .q(tx_byte)
@@ -79,6 +83,7 @@ module UART_top (
 	 //Contadores estructurales para RX/TX (3 bits) , va contando hasta 7
     registro_param #(.N(3)) rx_count_reg (
         .clk(clk),
+		  .rst(rst),
         .d(rx_count + 3'd1),    // Incremento del contador
         .en(tick & ~rx_done),   // Incrementa mientras no se haya recibido el byte completo
         .q(rx_count)            // Salida del contador
@@ -86,6 +91,7 @@ module UART_top (
 
     registro_param #(.N(3)) tx_count_reg (
         .clk(clk),
+		  .rst(rst),
         .d(tx_count + 3'd1),    // Incremento del contador
         .en(tick & ~tx_done),   // Incrementa mientras no se haya transmitido el byte completo
         .q(tx_count)            // Salida del contador

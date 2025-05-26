@@ -6,20 +6,20 @@ module flipflop_d(
     input  logic d,
     output logic q
 );
+    logic qm, qn_m; // Maestro
+    logic qs, qn_s; // Esclavo
 
-    // Señales intermedias para el latch SR
-    logic s, r;
-    logic q_int, qn_int;
+    // Maestro: transparente cuando clk=0
+    wire s_m = (~clk & en & d & ~rst);
+    wire r_m = (~clk & en & ~d & ~rst) | rst;
+    assign qm   = ~(r_m | qn_m);
+    assign qn_m = ~(s_m | qm);
 
-    // si rst es 1, salida va a 0
-    assign s = (~clk & en & d & ~rst);      // Set cuando clk baja, enable y d=1 y no reset
-    assign r = (~clk & en & ~d & ~rst) | rst; // Reset cuando clk baja, enable y d=0, o reset activo
+    // Esclavo: transparente cuando clk=1
+    wire s_s = (clk & qm & ~rst);
+    wire r_s = (clk & ~qm & ~rst) | rst;
+    assign qs   = ~(r_s | qn_s);
+    assign qn_s = ~(s_s | qs);
 
-    // Latch SR
-    assign q_int  = ~(r | qn_int);
-    assign qn_int = ~(s | q_int);
-
-    // Salida
-    assign q = q_int;
-
+    assign q = qs;
 endmodule
