@@ -38,23 +38,18 @@ module ALU (
                          ( OP[1] & ~OP[0] & and_out[3])   |
                          ( OP[1] &  OP[0] & xor_out[3]);
 
-  assign R = (OP == 2'b00) ? mult_out : {4'b0000, alu_result};
+  // Selección de R 
+  assign R = ({8{~OP[1] & ~OP[0]}} & mult_out) |
+             ({8{OP[1] | OP[0]}} & {4'b0000, alu_result});
 
   // Flags
+  assign Z = ((~OP[1] & ~OP[0]) & ~|mult_out) |
+             ((OP[1] | OP[0]) & ~|alu_result);
 
-// Z = 1 si el resultado es cero. Depende si es mult_out (OP==00) o alu_result.
-assign Z = (OP == 2'b00) ? ~|mult_out : ~|alu_result;
+  assign N = ((~OP[1] & ~OP[0]) & mult_out[7]) |
+             ((OP[1] | OP[0]) & alu_result[3]);
 
-// N = 1 si el resultado es negativo (MSB = 1). Usa bit 7 para mult, bit 3 para otros.
-assign N = (OP == 2'b00) ? mult_out[7] : alu_result[3];
- 
-  
-
-  // Flag C: Se activa solo para la operación de resta si hay acarreo
-  assign C = (OP == 2'b01) ? c_out_sub : 1'b0;  // Solo para resta
-
-  // Flag V: Se activa solo para la operación de resta si ocurre desbordamiento
-  assign V = (OP == 2'b01) ? v_out_sub : 1'b0;  // Solo para resta
+  assign C = ((~OP[1] & OP[0]) & c_out_sub); 
+  assign V = ((~OP[1] & OP[0]) & v_out_sub); 
 
 endmodule
-
