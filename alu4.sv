@@ -6,7 +6,8 @@ module alu4(
     output logic       zero,
     output logic       negative,
     output logic       carry,
-    output logic       overflow
+    output logic       overflow,
+	 output logic [6:0] segments
 );
     // Señales intermedias para cada operación
     logic [7:0] mult_result;
@@ -61,6 +62,12 @@ module alu4(
         .carry(sub_carry),
         .overflow(sub_overflow)
     );
+	 
+	 sevenSegmentsDisplay sevenSegD( .A(result[3]),
+	.B(result[2]),
+	.C(result[1]),
+	.D(result[0]),
+	.segments(segments));
 
     // MUX select signals
     logic sel0, sel1, sel2, sel3;
